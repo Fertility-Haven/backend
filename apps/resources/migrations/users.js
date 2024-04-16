@@ -29,6 +29,11 @@ module.exports = {
       user_photo: {
         type: DataTypes.STRING,
         allowNull: true
+      },
+      user_role: {
+        type: DataTypes.ENUM('patient', 'therapist', 'admin'),
+        allowNull: false,
+        defaultValue: 'patient'
       }
     })
   },

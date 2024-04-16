@@ -23,6 +23,7 @@ export const removeUser = async (req: any, res: Response): Promise<any> => {
     const result = await UserModel.findOne({
       where: {
         deleted: { [Op.eq]: 0 },
+        userRole: { [Op.not]: 'admin' },
         userId: { [Op.eq]: requestQuery.userId }
       }
     })

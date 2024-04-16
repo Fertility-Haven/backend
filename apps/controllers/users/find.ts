@@ -21,7 +21,15 @@ export const findAllUser = async (req: any, res: Response): Promise<any> => {
           ]
         })
       },
-      attributes: ['id', 'userId', 'userName', 'userEmail', 'createdAt', 'updatedAt'],
+      attributes: [
+        'id',
+        'userId',
+        'userName',
+        'userEmail',
+        'userRole',
+        'createdAt',
+        'updatedAt'
+      ],
       order: [['id', 'desc']],
       ...(req.query.pagination === 'true' && {
         limit: page.limit,
@@ -46,7 +54,14 @@ export const findDetailUser = async (req: any, res: Response): Promise<any> => {
         deleted: { [Op.eq]: 0 },
         userId: { [Op.eq]: req.body?.user?.userId }
       },
-      attributes: ['userId', 'userName', 'userEmail', 'createdAt', 'updatedAt']
+      attributes: [
+        'userId',
+        'userName',
+        'userEmail',
+        'userRole',
+        'createdAt',
+        'updatedAt'
+      ]
     })
 
     if (user == null) {

@@ -37,6 +37,9 @@ export const updateUser = async (req: any, res: Response): Promise<any> => {
       ...(requestBody.userEmail?.length > 0 && {
         userEmail: requestBody.userEmail
       }),
+      ...(requestBody.userRole?.length > 0 && {
+        userRole: requestBody.userRole
+      }),
       ...(requestBody.userPassword?.length > 0 && {
         userPassword: requestBody.userPassword
       })
