@@ -28,8 +28,9 @@ export const UserModel = sequelize.define<UserInstance>(
   {
     ...ZygoteModel,
     userId: {
-      type: DataTypes.STRING,
-      allowNull: false
+      type: DataTypes.UUID,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4
     },
     userName: {
       type: DataTypes.STRING,

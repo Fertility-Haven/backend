@@ -3,8 +3,8 @@
 
 import express, { type Express, type Request, type Response } from 'express'
 import { middleware } from '../../middlewares'
-import { findMyProfile } from '../../controllers/my-profile/find'
-import { updateMyProfile } from '../../controllers/my-profile/update'
+import { findMyProfile } from '../../controllers/myProfile/find'
+import { updateMyProfile } from '../../controllers/myProfile/update'
 
 export const myProfileRouter = (app: Express) => {
   const router = express.Router()
