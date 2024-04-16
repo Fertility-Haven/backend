@@ -26,20 +26,7 @@ module.exports = {
         type: DataTypes.STRING,
         allowNull: false
       },
-      user_phone_number: {
-        type: DataTypes.STRING,
-        allowNull: false
-      },
       user_photo: {
-        type: DataTypes.STRING,
-        allowNull: true
-      },
-      user_role: {
-        type: DataTypes.ENUM('user', 'admin', 'superAdmin'),
-        allowNull: false,
-        defaultValue: 'user'
-      },
-      user_fcm_id: {
         type: DataTypes.STRING,
         allowNull: true
       }

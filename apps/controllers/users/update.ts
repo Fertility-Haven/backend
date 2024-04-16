@@ -2,62 +2,50 @@ import { type Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { ResponseData } from '../../utilities/response'
 import { Op } from 'sequelize'
-import { requestChecker } from '../../utilities/requestCheker'
 import { UserModel, type UserAttributes } from '../../models/user'
+import { CONFIG } from '../../configs'
 
 export const updateUser = async (req: any, res: Response): Promise<any> => {
   const requestBody = req.body as UserAttributes
 
-  const emptyField = requestChecker({
-    requireList: ['userId'],
-    requestData: requestBody
-  })
-
-  if (emptyField.length > 0) {
-    const message = `invalid request parameter! require (${emptyField})`
-    const response = ResponseData.error(message)
-    return res.status(StatusCodes.BAD_REQUEST).json(response)
-  }
-
   try {
-    const result = await UserModel.findOne({
+    const user = await UserModel.findOne({
       where: {
         deleted: { [Op.eq]: 0 },
-        userId: { [Op.eq]: requestBody.userId }
+        userId: { [Op.eq]: req.body?.user?.userId }
       }
     })
 
-    if (result == null) {
+    if (user == null) {
       const message = 'user not found!'
       const response = ResponseData.error(message)
       return res.status(StatusCodes.NOT_FOUND).json(response)
     }
 
+    if ('userPassword' in requestBody) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      requestBody.userPassword = require('crypto')
+        .createHash('sha1')
+        .update(requestBody.userPassword + CONFIG.secret.passwordEncryption)
+        .digest('hex')
+    }
+
     const newData: UserAttributes | any = {
-      ...(requestBody?.userName?.length > 0 && {
-        userName: requestBody?.userName
+      ...(requestBody.userName?.length > 0 && {
+        userName: requestBody.userName
       }),
-      ...(requestBody?.userEmail?.length > 0 && {
-        userEmail: requestBody?.userEmail
+      ...(requestBody.userEmail?.length > 0 && {
+        userEmail: requestBody.userEmail
       }),
-      ...(requestBody?.userPassword?.length > 0 && {
-        userPassword: requestBody?.userPassword
-      }),
-      ...(requestBody?.userPhoneNumber?.length > 0 && {
-        userPhoneNumber: requestBody?.userPhoneNumber
-      }),
-      ...(requestBody?.userPhoto?.length > 0 && {
-        userPhoto: requestBody?.userPhoto
-      }),
-      ...(requestBody?.userRole?.length > 0 && {
-        userRole: requestBody?.userRole
+      ...(requestBody.userPassword?.length > 0 && {
+        userPassword: requestBody.userPassword
       })
     }
 
     await UserModel.update(newData, {
       where: {
         deleted: { [Op.eq]: 0 },
-        userId: { [Op.eq]: requestBody.userId }
+        userId: { [Op.eq]: req.body?.user?.userId }
       }
     })
 
@@ -65,6 +53,7 @@ export const updateUser = async (req: any, res: Response): Promise<any> => {
     response.data = { message: 'success' }
     return res.status(StatusCodes.OK).json(response)
   } catch (error: any) {
+    console.log(error.message)
     const message = `unable to process request! error ${error.message}`
     const response = ResponseData.error(message)
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(response)

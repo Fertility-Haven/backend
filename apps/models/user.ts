@@ -8,10 +8,7 @@ export interface UserAttributes extends ZygoteAttributes {
   userName: string
   userEmail: string
   userPassword: string
-  userPhoneNumber: string
   userPhoto: string
-  userRole: 'user' | 'admin' | 'superAdmin'
-  userFcmId: string
 }
 
 // we're telling the Model that 'id' is optional
@@ -44,21 +41,8 @@ export const UserModel = sequelize.define<UserInstance>(
       type: DataTypes.STRING,
       allowNull: false
     },
-    userPhoneNumber: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
     userPhoto: {
       type: DataTypes.STRING,
-      allowNull: true
-    },
-    userRole: {
-      type: DataTypes.ENUM('user', 'admin', 'superAdmin'),
-      allowNull: false,
-      defaultValue: 'user'
-    },
-    userFcmId: {
-      type: DataTypes.STRING(250),
       allowNull: true
     }
   },
