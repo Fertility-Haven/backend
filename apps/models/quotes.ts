@@ -4,7 +4,8 @@ import { sequelize } from '.'
 import { type ZygoteAttributes, ZygoteModel } from './zygote'
 
 export interface QuotesAttributes extends ZygoteAttributes {
-  quotesText: string
+  quoteId: string
+  quoteText: string
 }
 
 // we're telling the Model that 'id' is optional
@@ -23,7 +24,12 @@ export const QuotesModel = sequelize.define<QuotesInstance>(
   'quotes',
   {
     ...ZygoteModel,
-    quotesText: {
+    quoteId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4
+    },
+    quoteText: {
       type: DataTypes.TEXT,
       allowNull: false
     }

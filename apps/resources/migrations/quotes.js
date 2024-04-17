@@ -9,7 +9,12 @@ module.exports = {
   async up(queryInterface, DataTypes) {
     await queryInterface.createTable('quotes', {
       ...ZygoteModel,
-      quotes_text: {
+      quote_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        defaultValue: DataTypes.UUIDV4
+      },
+      quote_text: {
         type: DataTypes.TEXT,
         allowNull: false
       }

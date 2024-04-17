@@ -21,7 +21,7 @@ export const findAllUser = async (req: any, res: Response): Promise<any> => {
     const users = await UserModel.findAndCountAll({
       where: {
         deleted: { [Op.eq]: 0 },
-
+        userId: { [Op.not]: req.body?.user?.userId },
         ...(Boolean(req.query.search) && {
           [Op.or]: [
             { userName: { [Op.like]: `%${req.query.search}%` } },
