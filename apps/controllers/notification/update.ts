@@ -1,17 +1,15 @@
 import { type Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
-import { Op } from 'sequelize'
 import { ResponseData } from '../../utilities/response'
+import { Op } from 'sequelize'
 import { requestChecker } from '../../utilities/requestCheker'
-import { type UserAttributes, UserModel } from '../../models/user'
-import { hashPassword } from '../../utilities/scure_password'
-import { generateAccessToken } from '../../utilities/jwt'
+import { NotificationModel, type NotificationAttributes } from '../../models/notification'
 
-export const userLogin = async (req: any, res: Response): Promise<any> => {
-  const requestBody = req.body as UserAttributes
+export const updateNotification = async (req: any, res: Response): Promise<any> => {
+  const requestBody = req.body as NotificationAttributes
 
   const emptyField = requestChecker({
-    requireList: ['userEmail', 'userPassword'],
+    requireList: ['notificationId'],
     requestData: requestBody
   })
 
@@ -22,33 +20,37 @@ export const userLogin = async (req: any, res: Response): Promise<any> => {
   }
 
   try {
-    const user = await UserModel.findOne({
+    const result = await NotificationModel.findOne({
       where: {
         deleted: { [Op.eq]: 0 },
-        userEmail: { [Op.eq]: requestBody.userEmail }
+        notificationId: { [Op.eq]: requestBody.notificationId }
       }
     })
 
-    if (user == null) {
-      const message =
-        'Akun tidak ditemukan. Silahkan lakukan pendaftaran terlebih dahulu!'
+    if (result == null) {
+      const message = 'not found!'
       const response = ResponseData.error(message)
       return res.status(StatusCodes.NOT_FOUND).json(response)
     }
 
-    if (hashPassword(requestBody.userPassword) !== user.userPassword) {
-      const message = 'kombinasi email dan password tidak ditemukan!'
-      const response = ResponseData.error(message)
-      return res.status(StatusCodes.UNAUTHORIZED).json(response)
+    const newData: NotificationAttributes | any = {
+      ...(requestBody.notificationName.length > 0 && {
+        notificationName: requestBody.notificationName
+      }),
+      ...(requestBody.notificationMessage.length > 0 && {
+        notificationMessage: requestBody.notificationMessage
+      })
     }
 
-    const token = generateAccessToken({
-      userId: user.userId,
-      userRole: user.userRole
+    await NotificationModel.update(newData, {
+      where: {
+        deleted: { [Op.eq]: 0 },
+        notificationId: { [Op.eq]: requestBody.notificationId }
+      }
     })
 
     const response = ResponseData.default
-    response.data = { token }
+    response.data = { message: 'success' }
     return res.status(StatusCodes.OK).json(response)
   } catch (error: any) {
     const message = `unable to process request! error ${error.message}`

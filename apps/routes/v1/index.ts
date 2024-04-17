@@ -6,6 +6,7 @@ import { userRoutes } from './userRouter'
 import { dailyJournalRoutes } from './dailyJournalRouter'
 import { dailyMoodRoutes } from './dailyMoodRouter'
 import { quoteRoutes } from './quoteRouter'
+import { notificationRoutes } from './notificationRouter'
 
 export const appRouterV1 = (app: Express) => {
   app.get('/api/v1', async (req: Request, res: Response) => await index(req, res))
@@ -13,4 +14,5 @@ export const appRouterV1 = (app: Express) => {
   dailyJournalRoutes(app)
   dailyMoodRoutes(app)
   quoteRoutes(app)
+  notificationRoutes(app)
 }

@@ -3,10 +3,11 @@ import { CONFIG } from '../configs'
 
 export interface JwtPayloadTypes {
   userId: string
+  userRole: 'patient' | 'therapist' | 'admin'
 }
 
-export const generateAccessToken = (userId: JwtPayloadTypes): any => {
-  return jwt.sign(userId, CONFIG.secret.token ?? '')
+export const generateAccessToken = (user: JwtPayloadTypes): any => {
+  return jwt.sign(user, CONFIG.secret.token ?? '')
 }
 
 export const verifyAccessToken = (token: string): any => {
