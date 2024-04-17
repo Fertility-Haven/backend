@@ -3,13 +3,13 @@ import { StatusCodes } from 'http-status-codes'
 import { ResponseData } from '../../utilities/response'
 import { Op } from 'sequelize'
 import { requestChecker } from '../../utilities/requestCheker'
-import { UserModel, type UserAttributes } from '../../models/user'
+import { DailyJournalModel, type DailyJournalAttributes } from '../../models/dailyJournal'
 
-export const removeUser = async (req: any, res: Response): Promise<any> => {
-  const requestQuery = req.query as UserAttributes
+export const removeDailyJournal = async (req: any, res: Response): Promise<any> => {
+  const requestQuery = req.query as DailyJournalAttributes
 
   const emptyField = requestChecker({
-    requireList: ['userId'],
+    requireList: ['dailyJournalId'],
     requestData: requestQuery
   })
 
@@ -20,16 +20,16 @@ export const removeUser = async (req: any, res: Response): Promise<any> => {
   }
 
   try {
-    const result = await UserModel.findOne({
+    const result = await DailyJournalModel.findOne({
       where: {
         deleted: { [Op.eq]: 0 },
-        userRole: { [Op.not]: 'admin' },
-        userId: { [Op.eq]: requestQuery.userId }
+        dailyJournalUserId: { [Op.eq]: req.body?.user?.userId },
+        dailyJournalId: { [Op.eq]: requestQuery.dailyJournalId }
       }
     })
 
     if (result == null) {
-      const message = 'user not found!'
+      const message = 'not found!'
       const response = ResponseData.error(message)
       return res.status(StatusCodes.NOT_FOUND).json(response)
     }

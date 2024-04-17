@@ -1,5 +1,5 @@
 {
-  "name": "freshonline",
+  "name": "fertility_haven",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,7 +12,8 @@
     "lint:fix": "eslint --fix ./*.ts"
   },
   "keywords": [
-    "express js"
+    "express js",
+    "fertility_haven"
   ],
   "author": "Misdar Manto",
   "license": "ISC",

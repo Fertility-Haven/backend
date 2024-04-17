@@ -3,14 +3,14 @@ import { StatusCodes } from 'http-status-codes'
 import { ResponseData } from '../../utilities/response'
 import { Op } from 'sequelize'
 import { requestChecker } from '../../utilities/requestCheker'
-import { UserModel, type UserAttributes } from '../../models/user'
+import { NotificationModel, type NotificationAttributes } from '../../models/notification'
 
-export const removeUser = async (req: any, res: Response): Promise<any> => {
-  const requestQuery = req.query as UserAttributes
+export const updateNotification = async (req: any, res: Response): Promise<any> => {
+  const requestBody = req.body as NotificationAttributes
 
   const emptyField = requestChecker({
-    requireList: ['userId'],
-    requestData: requestQuery
+    requireList: ['notificationId'],
+    requestData: requestBody
   })
 
   if (emptyField.length > 0) {
@@ -20,22 +20,34 @@ export const removeUser = async (req: any, res: Response): Promise<any> => {
   }
 
   try {
-    const result = await UserModel.findOne({
+    const result = await NotificationModel.findOne({
       where: {
         deleted: { [Op.eq]: 0 },
-        userRole: { [Op.not]: 'admin' },
-        userId: { [Op.eq]: requestQuery.userId }
+        notificationId: { [Op.eq]: requestBody.notificationId }
       }
     })
 
     if (result == null) {
-      const message = 'user not found!'
+      const message = 'not found!'
       const response = ResponseData.error(message)
       return res.status(StatusCodes.NOT_FOUND).json(response)
     }
 
-    result.deleted = 1
-    void result.save()
+    const newData: NotificationAttributes | any = {
+      ...(requestBody.notificationName.length > 0 && {
+        notificationName: requestBody.notificationName
+      }),
+      ...(requestBody.notificationMessage.length > 0 && {
+        notificationMessage: requestBody.notificationMessage
+      })
+    }
+
+    await NotificationModel.update(newData, {
+      where: {
+        deleted: { [Op.eq]: 0 },
+        notificationId: { [Op.eq]: requestBody.notificationId }
+      }
+    })
 
     const response = ResponseData.default
     response.data = { message: 'success' }

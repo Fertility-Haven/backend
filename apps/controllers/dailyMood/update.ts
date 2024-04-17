@@ -3,14 +3,14 @@ import { StatusCodes } from 'http-status-codes'
 import { ResponseData } from '../../utilities/response'
 import { Op } from 'sequelize'
 import { requestChecker } from '../../utilities/requestCheker'
-import { UserModel, type UserAttributes } from '../../models/user'
+import { DailyMoodModel, type DailyMoodAttributes } from '../../models/dailyMood'
 
-export const removeUser = async (req: any, res: Response): Promise<any> => {
-  const requestQuery = req.query as UserAttributes
+export const updateDailyMood = async (req: any, res: Response): Promise<any> => {
+  const requestBody = req.body as DailyMoodAttributes
 
   const emptyField = requestChecker({
-    requireList: ['userId'],
-    requestData: requestQuery
+    requireList: ['dailyMoodId'],
+    requestData: requestBody
   })
 
   if (emptyField.length > 0) {
@@ -20,22 +20,33 @@ export const removeUser = async (req: any, res: Response): Promise<any> => {
   }
 
   try {
-    const result = await UserModel.findOne({
+    const result = await DailyMoodModel.findOne({
       where: {
         deleted: { [Op.eq]: 0 },
-        userRole: { [Op.not]: 'admin' },
-        userId: { [Op.eq]: requestQuery.userId }
+        dailyMoodUserId: { [Op.eq]: req.body?.user?.userId },
+        dailyMoodId: { [Op.eq]: requestBody.dailyMoodId }
       }
     })
 
     if (result == null) {
-      const message = 'user not found!'
+      const message = 'not found!'
       const response = ResponseData.error(message)
       return res.status(StatusCodes.NOT_FOUND).json(response)
     }
 
-    result.deleted = 1
-    void result.save()
+    const newData: DailyMoodAttributes | any = {
+      ...(requestBody.dailyMoodExpression.length > 0 && {
+        dailyMoodExpression: requestBody.dailyMoodExpression
+      })
+    }
+
+    await DailyMoodModel.update(newData, {
+      where: {
+        deleted: { [Op.eq]: 0 },
+        dailyMoodId: { [Op.eq]: requestBody.dailyMoodId },
+        dailyMoodUserId: { [Op.eq]: req.body?.user?.userId }
+      }
+    })
 
     const response = ResponseData.default
     response.data = { message: 'success' }

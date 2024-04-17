@@ -3,13 +3,13 @@ import { StatusCodes } from 'http-status-codes'
 import { ResponseData } from '../../utilities/response'
 import { Op } from 'sequelize'
 import { requestChecker } from '../../utilities/requestCheker'
-import { UserModel, type UserAttributes } from '../../models/user'
+import { NotificationModel, type NotificationAttributes } from '../../models/notification'
 
-export const removeUser = async (req: any, res: Response): Promise<any> => {
-  const requestQuery = req.query as UserAttributes
+export const removeNofication = async (req: any, res: Response): Promise<any> => {
+  const requestQuery = req.query as NotificationAttributes
 
   const emptyField = requestChecker({
-    requireList: ['userId'],
+    requireList: ['notificationId'],
     requestData: requestQuery
   })
 
@@ -20,16 +20,15 @@ export const removeUser = async (req: any, res: Response): Promise<any> => {
   }
 
   try {
-    const result = await UserModel.findOne({
+    const result = await NotificationModel.findOne({
       where: {
         deleted: { [Op.eq]: 0 },
-        userRole: { [Op.not]: 'admin' },
-        userId: { [Op.eq]: requestQuery.userId }
+        notificationId: { [Op.eq]: requestQuery.notificationId }
       }
     })
 
     if (result == null) {
-      const message = 'user not found!'
+      const message = 'notification not found!'
       const response = ResponseData.error(message)
       return res.status(StatusCodes.NOT_FOUND).json(response)
     }

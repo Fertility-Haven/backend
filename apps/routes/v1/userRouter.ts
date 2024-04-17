@@ -17,17 +17,7 @@ export const userRoutes = (app: Express): void => {
   router.get(
     '/detail/:userId',
     middleware.useAuthorization,
-    async (req: Request, res: Response) => await UsersController.findDetailUser(req, res)
-  )
-  router.get(
-    '/admins',
-    middleware.useAuthorization,
-    async (req: Request, res: Response) => await UsersController.findAdmins(req, res)
-  )
-  router.get(
-    '/admins/detail/:userId',
-    middleware.useAuthorization,
-    async (req: Request, res: Response) => await UsersController.findDetailAdmin(req, res)
+    async (req: Request, res: Response) => await UsersController.findDetail(req, res)
   )
   router.post(
     '/login',
@@ -39,10 +29,24 @@ export const userRoutes = (app: Express): void => {
   )
   router.patch(
     '/',
+    middleware.useAuthorization,
     async (req: Request, res: Response) => await UsersController.update(req, res)
   )
   router.delete(
     '/',
+    middleware.useAuthorization,
     async (req: Request, res: Response) => await UsersController.remove(req, res)
+  )
+
+  router.get(
+    '/my-profile',
+    middleware.useAuthorization,
+    async (req: Request, res: Response) => await UsersController.findMyProfile(req, res)
+  )
+
+  router.patch(
+    '/my-profile',
+    middleware.useAuthorization,
+    async (req: Request, res: Response) => await UsersController.updateMyProfile(req, res)
   )
 }

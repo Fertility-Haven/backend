@@ -7,37 +7,29 @@ const { ZygoteModel } = require('../zygote')
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, DataTypes) {
-    await queryInterface.createTable('users', {
+    await queryInterface.createTable('daily_journal', {
       ...ZygoteModel,
-      user_id: {
+      daily_journal_id: {
         type: DataTypes.UUID,
         allowNull: false,
         defaultValue: DataTypes.UUIDV4
       },
-      user_name: {
+      daily_journal_user_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        defaultValue: DataTypes.UUIDV4
+      },
+      daily_journal_title: {
         type: DataTypes.STRING(80),
         allowNull: false
       },
-      user_email: {
-        type: DataTypes.STRING(100),
+      daily_journal_description: {
+        type: DataTypes.TEXT,
         allowNull: false
-      },
-      user_password: {
-        type: DataTypes.STRING,
-        allowNull: false
-      },
-      user_photo: {
-        type: DataTypes.STRING,
-        allowNull: true
-      },
-      user_role: {
-        type: DataTypes.ENUM('patient', 'therapist', 'admin'),
-        allowNull: false,
-        defaultValue: 'patient'
       }
     })
   },
   async down(queryInterface, DataTypes) {
-    await queryInterface.dropTable('users')
+    await queryInterface.dropTable('daily_journal')
   }
 }

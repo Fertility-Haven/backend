@@ -3,14 +3,14 @@ import { StatusCodes } from 'http-status-codes'
 import { ResponseData } from '../../utilities/response'
 import { Op } from 'sequelize'
 import { requestChecker } from '../../utilities/requestCheker'
-import { UserModel, type UserAttributes } from '../../models/user'
+import { QuotesModel, type QuotesAttributes } from '../../models/quotes'
 
-export const removeUser = async (req: any, res: Response): Promise<any> => {
-  const requestQuery = req.query as UserAttributes
+export const updateQuote = async (req: any, res: Response): Promise<any> => {
+  const requestBody = req.body as QuotesAttributes
 
   const emptyField = requestChecker({
-    requireList: ['userId'],
-    requestData: requestQuery
+    requireList: ['quoteId'],
+    requestData: requestBody
   })
 
   if (emptyField.length > 0) {
@@ -20,22 +20,31 @@ export const removeUser = async (req: any, res: Response): Promise<any> => {
   }
 
   try {
-    const result = await UserModel.findOne({
+    const result = await QuotesModel.findOne({
       where: {
         deleted: { [Op.eq]: 0 },
-        userRole: { [Op.not]: 'admin' },
-        userId: { [Op.eq]: requestQuery.userId }
+        quoteId: { [Op.eq]: requestBody.quoteId }
       }
     })
 
     if (result == null) {
-      const message = 'user not found!'
+      const message = 'not found!'
       const response = ResponseData.error(message)
       return res.status(StatusCodes.NOT_FOUND).json(response)
     }
 
-    result.deleted = 1
-    void result.save()
+    const newData: QuotesAttributes | any = {
+      ...(requestBody.quoteText.length > 0 && {
+        quoteText: requestBody.quoteText
+      })
+    }
+
+    await QuotesModel.update(newData, {
+      where: {
+        deleted: { [Op.eq]: 0 },
+        quoteId: { [Op.eq]: requestBody.quoteId }
+      }
+    })
 
     const response = ResponseData.default
     response.data = { message: 'success' }

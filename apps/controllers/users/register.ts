@@ -11,7 +11,7 @@ export const userRegister = async (req: any, res: Response): Promise<any> => {
   const requestBody = req.body as UserAttributes
 
   const emptyField = requestChecker({
-    requireList: ['userName', 'userEmail', 'userPassword', 'userPhoneNumber'],
+    requireList: ['userName', 'userEmail', 'userRole', 'userPassword'],
     requestData: requestBody
   })
 
