@@ -5,7 +5,7 @@ import { ResponseData } from '../utilities/response'
 export const index = async (req: Request, res: Response): Promise<any> => {
   try {
     const data = {
-      about_me: 'Welcome to ECOMMERCE API V1'
+      about_me: 'Welcome to Fertility Haven API V1'
     }
     const response = ResponseData.default
     response.data = data
